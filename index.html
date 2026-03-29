@@ -220,6 +220,92 @@
     .stat-number { font-size: 2.5rem; font-weight: 700; color: var(--cyan); font-family: 'JetBrains Mono', monospace; }
     .stat-label { color: var(--muted); font-size: 0.875rem; margin-top: 0.25rem; }
 
+    /* Demo */
+    .demo-container {
+      background: var(--blue-card);
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 16px;
+      overflow: hidden;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .demo-toolbar {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid rgba(0,212,255,0.15);
+    }
+    .demo-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .demo-dot:nth-child(1) { background: #ff5f57; }
+    .demo-dot:nth-child(2) { background: #febc2e; }
+    .demo-dot:nth-child(3) { background: #28c840; }
+    .demo-toolbar-title { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-left: 0.75rem; }
+    .demo-body { padding: 1.5rem; }
+    .demo-input-row { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .demo-input {
+      flex: 1;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(0,212,255,0.25);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .demo-input:focus { border-color: var(--cyan); }
+    .demo-input::placeholder { color: var(--muted); }
+    .demo-btn {
+      background: linear-gradient(135deg, var(--cyan), #0099cc);
+      color: var(--blue-dark);
+      font-weight: 700;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+    .demo-btn:hover { opacity: 0.85; }
+    .demo-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .demo-presets { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .demo-preset {
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 6px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      color: var(--cyan);
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      transition: background 0.2s;
+    }
+    .demo-preset:hover { background: rgba(0,212,255,0.15); }
+    .demo-output {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(0,212,255,0.1);
+      border-radius: 8px;
+      padding: 1.25rem;
+      min-height: 60px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: var(--muted);
+      display: none;
+    }
+    .demo-output.active { display: block; }
+    .demo-output .line { opacity: 0; transform: translateY(4px); transition: opacity 0.3s, transform 0.3s; }
+    .demo-output .line.visible { opacity: 1; transform: translateY(0); }
+    .demo-output .dept-header { color: var(--cyan); font-weight: 700; margin-top: 0.75rem; }
+    .demo-output .dept-header:first-child { margin-top: 0; }
+    .demo-output .role-line { color: var(--text); padding-left: 1rem; }
+    .demo-output .total-line { color: var(--orange); font-weight: 700; margin-top: 0.75rem; border-top: 1px solid rgba(0,212,255,0.15); padding-top: 0.75rem; }
+    .demo-cursor { display: inline-block; width: 8px; height: 14px; background: var(--cyan); animation: blink 0.8s infinite; vertical-align: middle; margin-left: 2px; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
     /* Divider */
     .divider { border: none; border-top: 1px solid rgba(0,212,255,0.1); margin: 0; }
 
@@ -265,7 +351,7 @@
     <p class="hero-sub">TD Tools uses AI to generate accurate, department-by-department crew estimates from your event brief — in seconds, not hours.</p>
     <div class="hero-actions">
       <a href="#pricing" class="btn-primary">Start Free Trial →</a>
-      <a href="#how-it-works" class="btn-secondary">See How It Works</a>
+      <a href="#demo" class="btn-secondary">Try Live Demo</a>
     </div>
   </div>
 
@@ -308,6 +394,37 @@
       <div class="pipeline-step">
         <div class="step-icon">✅</div>
         <div class="step-label">Export & Share</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- Demo -->
+  <section id="demo">
+    <div class="section-label mono">// TRY IT NOW</div>
+    <h2>See TD Tools <span>In Action</span></h2>
+    <p class="section-sub">Describe any live event and watch TD Tools generate a full crew estimate in real time.</p>
+    <div class="demo-container">
+      <div class="demo-toolbar">
+        <div class="demo-dot"></div>
+        <div class="demo-dot"></div>
+        <div class="demo-dot"></div>
+        <div class="demo-toolbar-title">td-tools — estimate engine</div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-presets">
+          <span class="demo-preset" data-preset="corporate">Corporate Keynote</span>
+          <span class="demo-preset" data-preset="concert">Arena Concert</span>
+          <span class="demo-preset" data-preset="festival">Music Festival</span>
+          <span class="demo-preset" data-preset="gala">Award Gala</span>
+          <span class="demo-preset" data-preset="broadcast">Live Broadcast</span>
+        </div>
+        <div class="demo-input-row">
+          <input class="demo-input" id="demoInput" type="text" placeholder="Describe your event... e.g. '3-day corporate conference, 2000 attendees, main stage + 4 breakouts'" />
+          <button class="demo-btn" id="demoBtn" onclick="runDemo()">Estimate →</button>
+        </div>
+        <div class="demo-output" id="demoOutput"></div>
       </div>
     </div>
   </section>
@@ -425,6 +542,236 @@
       <a href="https://buy.stripe.com/8x2bIT8tD3m1cCs9Qg6Vq05" class="btn-primary" style="font-size:1.1rem;padding:1.1rem 2.5rem;display:inline-block">Start Free Trial — $149/mo →</a>
     </div>
   </section>
+
+  <script>
+    const presets = {
+      corporate: {
+        input: "3-day corporate keynote, 1500 attendees, main stage with IMAG, 2 breakout rooms",
+        lines: [
+          { type: "header", text: "⚡ ANALYZING EVENT BRIEF..." },
+          { type: "info", text: "Event: Corporate Keynote · 3 days · 1,500 pax" },
+          { type: "info", text: "Venues: Main stage (IMAG) + 2 breakouts" },
+          { type: "dept", text: "── AUDIO ──────────────────────────" },
+          { type: "role", text: "FOH Engineer        ×1   $850/day   3 days   $2,550" },
+          { type: "role", text: "Monitor Engineer    ×1   $750/day   3 days   $2,250" },
+          { type: "role", text: "A2 / RF Tech        ×2   $550/day   3 days   $3,300" },
+          { type: "role", text: "Breakout Audio Tech ×2   $450/day   3 days   $2,700" },
+          { type: "dept", text: "── LIGHTING ───────────────────────" },
+          { type: "role", text: "Lighting Designer   ×1   $900/day   3 days   $2,700" },
+          { type: "role", text: "Board Operator      ×1   $650/day   3 days   $1,950" },
+          { type: "role", text: "Spot Operators      ×2   $400/day   3 days   $2,400" },
+          { type: "dept", text: "── VIDEO ──────────────────────────" },
+          { type: "role", text: "Video Director      ×1   $950/day   3 days   $2,850" },
+          { type: "role", text: "Camera Operators    ×3   $650/day   3 days   $5,850" },
+          { type: "role", text: "LED/Playback Tech   ×1   $600/day   3 days   $1,800" },
+          { type: "dept", text: "── STAGE & LABOR ──────────────────" },
+          { type: "role", text: "Stage Manager       ×1   $800/day   3 days   $2,400" },
+          { type: "role", text: "Stagehands          ×4   $350/day   3 days   $4,200" },
+          { type: "total", text: "TOTAL ESTIMATE                          $34,950" },
+          { type: "info", text: "✓ 20 crew · 3 days · 4 departments" },
+        ]
+      },
+      concert: {
+        input: "Arena concert, 12000 capacity, headline act + 2 openers, full IMAG + broadcast",
+        lines: [
+          { type: "header", text: "⚡ ANALYZING EVENT BRIEF..." },
+          { type: "info", text: "Event: Arena Concert · 1 day + load-in · 12,000 cap" },
+          { type: "info", text: "Acts: Headliner + 2 support · Full IMAG + broadcast" },
+          { type: "dept", text: "── AUDIO ──────────────────────────" },
+          { type: "role", text: "FOH Engineer        ×1   $1,200/day  2 days   $2,400" },
+          { type: "role", text: "Monitor Engineer    ×1   $1,100/day  2 days   $2,200" },
+          { type: "role", text: "A2 / System Tech    ×3   $750/day    2 days   $4,500" },
+          { type: "role", text: "RF Coordinator      ×1   $800/day    2 days   $1,600" },
+          { type: "dept", text: "── LIGHTING ───────────────────────" },
+          { type: "role", text: "Lighting Designer   ×1   $1,500/day  2 days   $3,000" },
+          { type: "role", text: "Board Operator      ×1   $900/day    2 days   $1,800" },
+          { type: "role", text: "Moving Light Tech   ×2   $650/day    2 days   $2,600" },
+          { type: "role", text: "Spot Operators      ×4   $400/day    1 day    $1,600" },
+          { type: "role", text: "Riggers             ×4   $550/day    2 days   $4,400" },
+          { type: "dept", text: "── VIDEO ──────────────────────────" },
+          { type: "role", text: "Video Director      ×1   $1,200/day  2 days   $2,400" },
+          { type: "role", text: "Camera Operators    ×6   $750/day    1 day    $4,500" },
+          { type: "role", text: "LED Tech            ×2   $700/day    2 days   $2,800" },
+          { type: "role", text: "Broadcast Engineer  ×1   $1,000/day  1 day    $1,000" },
+          { type: "dept", text: "── STAGE & RIGGING ────────────────" },
+          { type: "role", text: "Stage Manager       ×1   $1,000/day  2 days   $2,000" },
+          { type: "role", text: "Riggers (Arena)     ×6   $600/day    2 days   $7,200" },
+          { type: "role", text: "Stagehands          ×12  $350/day    2 days   $8,400" },
+          { type: "dept", text: "── POWER ──────────────────────────" },
+          { type: "role", text: "Power Distro Tech   ×2   $650/day    2 days   $2,600" },
+          { type: "total", text: "TOTAL ESTIMATE                          $55,000" },
+          { type: "info", text: "✓ 49 crew · 2 days · 5 departments" },
+        ]
+      },
+      festival: {
+        input: "3-day outdoor music festival, 5 stages, 25000 daily attendance",
+        lines: [
+          { type: "header", text: "⚡ ANALYZING EVENT BRIEF..." },
+          { type: "info", text: "Event: Music Festival · 3 days + 2 build · 25,000/day" },
+          { type: "info", text: "Venues: 5 stages · Outdoor" },
+          { type: "dept", text: "── AUDIO ──────────────────────────" },
+          { type: "role", text: "FOH Engineers       ×5   $1,000/day  3 days   $15,000" },
+          { type: "role", text: "Monitor Engineers   ×5   $900/day    3 days   $13,500" },
+          { type: "role", text: "System Techs        ×5   $700/day    5 days   $17,500" },
+          { type: "role", text: "RF Coordinator      ×1   $800/day    5 days   $4,000" },
+          { type: "dept", text: "── LIGHTING ───────────────────────" },
+          { type: "role", text: "LDs                 ×5   $1,200/day  3 days   $18,000" },
+          { type: "role", text: "Board Operators     ×5   $700/day    3 days   $10,500" },
+          { type: "role", text: "Riggers             ×8   $550/day    5 days   $22,000" },
+          { type: "dept", text: "── VIDEO ──────────────────────────" },
+          { type: "role", text: "Video Directors     ×3   $1,100/day  3 days   $9,900" },
+          { type: "role", text: "Camera Ops          ×12  $700/day    3 days   $25,200" },
+          { type: "role", text: "LED Techs           ×5   $650/day    5 days   $16,250" },
+          { type: "dept", text: "── STAGE & RIGGING ────────────────" },
+          { type: "role", text: "Stage Managers      ×5   $900/day    5 days   $22,500" },
+          { type: "role", text: "Stagehands          ×30  $350/day    5 days   $52,500" },
+          { type: "dept", text: "── POWER & INFRA ──────────────────" },
+          { type: "role", text: "Generator Ops       ×3   $600/day    5 days   $9,000" },
+          { type: "role", text: "Electricians        ×4   $550/day    5 days   $11,000" },
+          { type: "total", text: "TOTAL ESTIMATE                         $246,850" },
+          { type: "info", text: "✓ 96 crew · 5 days · 5 departments" },
+        ]
+      },
+      gala: {
+        input: "500-person black tie awards gala, live band, presenter walk-ons, scenic stage",
+        lines: [
+          { type: "header", text: "⚡ ANALYZING EVENT BRIEF..." },
+          { type: "info", text: "Event: Awards Gala · 1 day + load-in · 500 pax" },
+          { type: "info", text: "Features: Live band, walk-ons, scenic stage" },
+          { type: "dept", text: "── AUDIO ──────────────────────────" },
+          { type: "role", text: "FOH Engineer        ×1   $850/day   2 days   $1,700" },
+          { type: "role", text: "Monitor Engineer    ×1   $750/day   2 days   $1,500" },
+          { type: "role", text: "A2 / Mic Wrangler   ×2   $500/day   2 days   $2,000" },
+          { type: "dept", text: "── LIGHTING ───────────────────────" },
+          { type: "role", text: "Lighting Designer   ×1   $1,000/day  2 days   $2,000" },
+          { type: "role", text: "Board Operator      ×1   $650/day    2 days   $1,300" },
+          { type: "role", text: "Spot Operators      ×2   $400/day    1 day    $800" },
+          { type: "dept", text: "── VIDEO ──────────────────────────" },
+          { type: "role", text: "Video Director      ×1   $900/day    1 day    $900" },
+          { type: "role", text: "Camera Operators    ×2   $650/day    1 day    $1,300" },
+          { type: "role", text: "Playback/Graphics   ×1   $600/day    2 days   $1,200" },
+          { type: "dept", text: "── SCENIC & STAGE ─────────────────" },
+          { type: "role", text: "Scenic Designer     ×1   $800/day    2 days   $1,600" },
+          { type: "role", text: "Stage Manager       ×1   $800/day    2 days   $1,600" },
+          { type: "role", text: "Stagehands          ×4   $350/day    2 days   $2,800" },
+          { type: "total", text: "TOTAL ESTIMATE                          $18,700" },
+          { type: "info", text: "✓ 18 crew · 2 days · 4 departments" },
+        ]
+      },
+      broadcast: {
+        input: "Live TV broadcast, 2-hour show, 8 cameras, graphics package, satellite uplink",
+        lines: [
+          { type: "header", text: "⚡ ANALYZING EVENT BRIEF..." },
+          { type: "info", text: "Event: Live Broadcast · 1 show day + 1 prep · 2 hrs" },
+          { type: "info", text: "Config: 8-cam, graphics, satellite uplink" },
+          { type: "dept", text: "── AUDIO ──────────────────────────" },
+          { type: "role", text: "A1 / Broadcast Mix  ×1   $1,200/day  2 days   $2,400" },
+          { type: "role", text: "A2 / Comms Tech     ×2   $650/day    2 days   $2,600" },
+          { type: "dept", text: "── LIGHTING ───────────────────────" },
+          { type: "role", text: "Lighting Designer   ×1   $1,200/day  2 days   $2,400" },
+          { type: "role", text: "Board Operator      ×1   $800/day    2 days   $1,600" },
+          { type: "role", text: "Electricians        ×2   $500/day    2 days   $2,000" },
+          { type: "dept", text: "── VIDEO / BROADCAST ──────────────" },
+          { type: "role", text: "Technical Director  ×1   $1,500/day  2 days   $3,000" },
+          { type: "role", text: "Video Director      ×1   $1,300/day  2 days   $2,600" },
+          { type: "role", text: "Camera Operators    ×8   $750/day    1 day    $6,000" },
+          { type: "role", text: "Graphics Operator   ×1   $800/day    2 days   $1,600" },
+          { type: "role", text: "Replay/EVS Op       ×1   $900/day    1 day    $900" },
+          { type: "role", text: "Satellite Uplink    ×1   $1,100/day  1 day    $1,100" },
+          { type: "role", text: "Utility / Cable     ×3   $400/day    2 days   $2,400" },
+          { type: "dept", text: "── STAGE & COMMS ──────────────────" },
+          { type: "role", text: "Stage Manager       ×1   $900/day    2 days   $1,800" },
+          { type: "role", text: "Stagehands          ×4   $350/day    2 days   $2,800" },
+          { type: "total", text: "TOTAL ESTIMATE                          $31,200" },
+          { type: "info", text: "✓ 28 crew · 2 days · 4 departments" },
+        ]
+      }
+    };
+
+    // Generic fallback for custom input
+    const genericLines = [
+      { type: "header", text: "⚡ ANALYZING EVENT BRIEF..." },
+      { type: "info", text: "Event: Custom Event · Parsing details..." },
+      { type: "dept", text: "── AUDIO ──────────────────────────" },
+      { type: "role", text: "FOH Engineer        ×1   $850/day   2 days   $1,700" },
+      { type: "role", text: "Monitor Engineer    ×1   $750/day   2 days   $1,500" },
+      { type: "role", text: "A2 Tech             ×2   $500/day   2 days   $2,000" },
+      { type: "dept", text: "── LIGHTING ───────────────────────" },
+      { type: "role", text: "Lighting Designer   ×1   $900/day   2 days   $1,800" },
+      { type: "role", text: "Board Operator      ×1   $650/day   2 days   $1,300" },
+      { type: "dept", text: "── VIDEO ──────────────────────────" },
+      { type: "role", text: "Video Director      ×1   $900/day   2 days   $1,800" },
+      { type: "role", text: "Camera Operators    ×2   $650/day   2 days   $2,600" },
+      { type: "dept", text: "── STAGE ──────────────────────────" },
+      { type: "role", text: "Stage Manager       ×1   $800/day   2 days   $1,600" },
+      { type: "role", text: "Stagehands          ×4   $350/day   2 days   $2,800" },
+      { type: "total", text: "TOTAL ESTIMATE                          $15,100" },
+      { type: "info", text: "✓ 14 crew · 2 days · 4 departments" },
+      { type: "info", text: "→ Sign up for full custom AI estimates with your rate cards" },
+    ];
+
+    let running = false;
+
+    document.querySelectorAll('.demo-preset').forEach(el => {
+      el.addEventListener('click', () => {
+        const key = el.dataset.preset;
+        if (presets[key]) {
+          document.getElementById('demoInput').value = presets[key].input;
+          runDemo(key);
+        }
+      });
+    });
+
+    function runDemo(presetKey) {
+      if (running) return;
+      const input = document.getElementById('demoInput');
+      const output = document.getElementById('demoOutput');
+      const btn = document.getElementById('demoBtn');
+
+      if (!input.value.trim()) {
+        input.focus();
+        return;
+      }
+
+      running = true;
+      btn.disabled = true;
+      btn.textContent = 'Estimating...';
+      output.innerHTML = '<span class="demo-cursor"></span>';
+      output.classList.add('active');
+
+      const lines = presetKey && presets[presetKey] ? presets[presetKey].lines : genericLines;
+
+      let i = 0;
+      function addLine() {
+        if (i >= lines.length) {
+          const cursor = output.querySelector('.demo-cursor');
+          if (cursor) cursor.remove();
+          running = false;
+          btn.disabled = false;
+          btn.textContent = 'Estimate →';
+          return;
+        }
+        const line = lines[i];
+        const el = document.createElement('div');
+        el.classList.add('line');
+        if (line.type === 'dept') el.classList.add('dept-header');
+        else if (line.type === 'role') el.classList.add('role-line');
+        else if (line.type === 'total') el.classList.add('total-line');
+        else if (line.type === 'header') { el.style.color = 'var(--orange)'; el.style.fontWeight = '700'; }
+        el.textContent = line.text;
+
+        const cursor = output.querySelector('.demo-cursor');
+        output.insertBefore(el, cursor);
+        requestAnimationFrame(() => el.classList.add('visible'));
+        i++;
+
+        const delay = line.type === 'header' ? 600 : line.type === 'dept' ? 300 : line.type === 'total' ? 500 : 120;
+        setTimeout(addLine, delay);
+      }
+
+      setTimeout(addLine, 400);
+    }
+  </script>
 
   <footer>
     <p>© 2025 <strong>Agentic Sales Inc</strong> · <a href="https://agenticpipeline.io">agenticpipeline.io</a> · Built with AI for the live events industry</p>
