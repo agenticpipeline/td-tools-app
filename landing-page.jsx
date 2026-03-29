@@ -95,6 +95,13 @@ const LandingPage = () => {
   );
 
   // Pricing tier
+  // Stripe payment links (live)
+  const paymentLinks = {
+    Starter: 'https://buy.stripe.com/aFa3cndNX2hXeKAfaA6Vq01',
+    Professional: 'https://buy.stripe.com/dRmcMX39jaOt45W9Qg6Vq02',
+    Enterprise: 'https://buy.stripe.com/fZuaEPeS1f4JfOE3rS6Vq03',
+  };
+
   const PricingTier = ({ tier, price, description, features, highlighted }) => (
     <div
       className={`relative rounded-lg overflow-hidden transition-all duration-300 ${
@@ -115,15 +122,18 @@ const LandingPage = () => {
           <span className="text-5xl font-mono font-bold text-cyan-400">${price}</span>
           <span className="text-blue-300 font-mono text-sm">/month</span>
         </div>
-        <button
-          className={`w-full py-3 px-4 rounded-lg font-mono font-bold mb-8 transition-all duration-300 ${
+        <a
+          href={paymentLinks[tier] || '#'}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`block w-full py-3 px-4 rounded-lg font-mono font-bold mb-8 transition-all duration-300 text-center ${
             highlighted
               ? 'bg-orange-500 hover:bg-orange-600 text-white'
               : 'bg-cyan-400/20 border border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-blue-900'
           }`}
         >
           Subscribe Now
-        </button>
+        </a>
         <ul className="space-y-3">
           {features.map((feature, idx) => (
             <li key={idx} className="flex items-start gap-3">
