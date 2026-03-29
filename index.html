@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TD Tools | AI-Powered Labor Estimation for Live Events</title>
+  <meta name="description" content="Stop guessing on labor costs. TD Tools uses AI to generate accurate, department-by-department crew estimates from your event brief in seconds." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cyan: #00d4ff;
+      --orange: #ff6b35;
+      --blue-dark: #0a0f1e;
+      --blue-mid: #0d1b3e;
+      --blue-card: rgba(13,27,62,0.6);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--blue-dark);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Nav */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      background: rgba(10,15,30,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,212,255,0.15);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo { font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 700; color: var(--cyan); text-decoration: none; }
+    .nav-cta { background: var(--cyan); color: var(--blue-dark); padding: 0.5rem 1.25rem; border-radius: 6px; font-weight: 600; font-size: 0.875rem; text-decoration: none; transition: opacity 0.2s; }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* Hero */
+    .hero {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 6rem 1.5rem 4rem;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      border: 1px solid rgba(0,212,255,0.4);
+      border-radius: 999px;
+      padding: 0.35rem 1rem;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--cyan);
+      margin-bottom: 2rem;
+    }
+    .badge::before { content: '●'; font-size: 0.5rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      max-width: 900px;
+      margin-bottom: 1.5rem;
+    }
+    h1 span { color: var(--cyan); }
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--muted);
+      max-width: 600px;
+      line-height: 1.7;
+      margin-bottom: 3rem;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cyan), #0099cc);
+      color: var(--blue-dark);
+      font-weight: 700;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 20px rgba(0,212,255,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,212,255,0.5); }
+    .btn-secondary {
+      border: 1px solid rgba(0,212,255,0.4);
+      color: var(--cyan);
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: rgba(0,212,255,0.08); }
+
+    /* Pipeline */
+    section { position: relative; z-index: 1; padding: 5rem 1.5rem; max-width: 1200px; margin: 0 auto; }
+    .section-label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--cyan); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; }
+    h2 { font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 700; margin-bottom: 1rem; }
+    h2 span { color: var(--cyan); }
+    .section-sub { color: var(--muted); font-size: 1.05rem; max-width: 580px; line-height: 1.7; margin-bottom: 3rem; }
+
+    .pipeline {
+      display: flex; gap: 0; align-items: flex-start;
+      overflow-x: auto; padding-bottom: 1rem;
+    }
+    .pipeline-step {
+      flex: 1; min-width: 120px;
+      display: flex; flex-direction: column; align-items: center;
+      position: relative; padding: 0 0.5rem;
+    }
+    .pipeline-step::after {
+      content: ''; position: absolute;
+      top: 28px; left: 60%; width: 80%; height: 2px;
+      background: linear-gradient(90deg, var(--cyan), transparent);
+      opacity: 0.4;
+    }
+    .pipeline-step:last-child::after { display: none; }
+    .step-icon {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, var(--cyan), #0066cc);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 0 20px rgba(0,212,255,0.25);
+    }
+    .step-label { font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: var(--cyan); text-align: center; }
+
+    /* Features grid */
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .card {
+      background: var(--blue-card);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 12px;
+      padding: 1.75rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { border-color: rgba(0,212,255,0.5); box-shadow: 0 0 24px rgba(0,212,255,0.1); }
+    .card-icon { font-size: 1.75rem; margin-bottom: 1rem; }
+    .card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+    /* Pricing */
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .pricing-card {
+      background: var(--blue-card);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex; flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .pricing-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,212,255,0.15); }
+    .pricing-card.featured {
+      border-color: var(--cyan);
+      box-shadow: 0 0 40px rgba(0,212,255,0.2);
+      position: relative;
+    }
+    .featured-badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--cyan); color: var(--blue-dark);
+      font-size: 0.7rem; font-weight: 700;
+      padding: 0.2rem 0.75rem; border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .plan-name { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--cyan); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+    .plan-price { font-size: 2.75rem; font-weight: 700; line-height: 1; margin-bottom: 0.25rem; }
+    .plan-period { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+    .plan-features { list-style: none; margin-bottom: 2rem; flex: 1; }
+    .plan-features li { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.4rem 0; font-size: 0.9rem; color: var(--muted); border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .plan-features li::before { content: '✓'; color: var(--cyan); font-weight: 700; flex-shrink: 0; }
+    .btn-plan {
+      display: block; text-align: center;
+      background: linear-gradient(135deg, var(--cyan), #0099cc);
+      color: var(--blue-dark);
+      font-weight: 700; font-size: 0.95rem;
+      padding: 0.875rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-plan:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-plan-outline {
+      display: block; text-align: center;
+      border: 1px solid rgba(0,212,255,0.4);
+      color: var(--cyan);
+      font-weight: 600; font-size: 0.95rem;
+      padding: 0.875rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-plan-outline:hover { background: rgba(0,212,255,0.08); }
+
+    /* Stats */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; text-align: center; }
+    .stat-number { font-size: 2.5rem; font-weight: 700; color: var(--cyan); font-family: 'JetBrains Mono', monospace; }
+    .stat-label { color: var(--muted); font-size: 0.875rem; margin-top: 0.25rem; }
+
+    /* Divider */
+    .divider { border: none; border-top: 1px solid rgba(0,212,255,0.1); margin: 0; }
+
+    /* CTA section */
+    .cta-section {
+      text-align: center;
+      background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(0,100,200,0.1));
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 20px;
+      padding: 4rem 2rem;
+      margin: 2rem auto;
+    }
+
+    /* Footer */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid rgba(0,212,255,0.1);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--cyan); text-decoration: none; }
+
+    @media (max-width: 640px) {
+      nav { padding: 0 1rem; }
+      .pipeline { gap: 0; }
+      .pipeline-step::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="#">TD_TOOLS</a>
+    <a class="nav-cta mono" href="#pricing">Get Started →</a>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="badge mono">AGENTIC PIPELINE // LIVE EVENTS AI</div>
+    <h1>Stop Guessing.<br/><span>Start Estimating.</span></h1>
+    <p class="hero-sub">TD Tools uses AI to generate accurate, department-by-department crew estimates from your event brief — in seconds, not hours.</p>
+    <div class="hero-actions">
+      <a href="#pricing" class="btn-primary">Start Free Trial →</a>
+      <a href="#how-it-works" class="btn-secondary">See How It Works</a>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Stats -->
+  <section>
+    <div class="stats">
+      <div><div class="stat-number mono">10x</div><div class="stat-label">Faster than manual estimation</div></div>
+      <div><div class="stat-number mono">8+</div><div class="stat-label">Departments covered</div></div>
+      <div><div class="stat-number mono">95%</div><div class="stat-label">Estimate accuracy rate</div></div>
+      <div><div class="stat-number mono">$0</div><div class="stat-label">Setup or hidden fees</div></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- How it works -->
+  <section id="how-it-works">
+    <div class="section-label mono">// HOW IT WORKS</div>
+    <h2>From Brief to <span>Budget</span> in Seconds</h2>
+    <p class="section-sub">Just describe your event. TD Tools handles the rest — crew counts, day rates, and full department breakdowns.</p>
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="step-icon">📋</div>
+        <div class="step-label">Upload Brief</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-icon">🤖</div>
+        <div class="step-label">AI Analysis</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-icon">🎛️</div>
+        <div class="step-label">Dept. Breakdown</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-icon">📊</div>
+        <div class="step-label">Labor Estimate</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-icon">✅</div>
+        <div class="step-label">Export & Share</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- Features -->
+  <section id="features">
+    <div class="section-label mono">// CAPABILITIES</div>
+    <h2>Built for <span>Production Professionals</span></h2>
+    <p class="section-sub">Every feature designed around how real TD and production teams actually work.</p>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-icon">🎙️</div>
+        <h3>Audio Department</h3>
+        <p>FOH engineers, monitor techs, A2s, RF coordinators — complete crew builds with day rates.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💡</div>
+        <h3>Lighting Department</h3>
+        <p>LD, board ops, moving light techs, riggers — scaled to show complexity.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📷</div>
+        <h3>Video Department</h3>
+        <p>Camera ops, video directors, TD, playback — full IMAG and broadcast configurations.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏗️</div>
+        <h3>Stage & Rigging</h3>
+        <p>Stage managers, carpenters, riggers, automation — buildout through strike.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎨</div>
+        <h3>Scenic & Décor</h3>
+        <p>Set designers, painters, props — full scenic department estimation.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h3>Power & Infrastructure</h3>
+        <p>Generator operators, electricians, power distribution — all included.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- Pricing -->
+  <section id="pricing">
+    <div class="section-label mono">// PRICING</div>
+    <h2>Simple, <span>Transparent</span> Pricing</h2>
+    <p class="section-sub">No contracts. No per-seat fees. Cancel anytime. Start generating estimates today.</p>
+    <div class="pricing-grid">
+
+      <!-- Starter -->
+      <div class="pricing-card">
+        <div class="plan-name mono">Starter</div>
+        <div class="plan-price">$299</div>
+        <div class="plan-period">/month</div>
+        <ul class="plan-features">
+          <li>Up to 20 estimates/month</li>
+          <li>All 8 departments</li>
+          <li>PDF & CSV export</li>
+          <li>Email support</li>
+          <li>Single user</li>
+        </ul>
+        <a href="https://buy.stripe.com/aFa3cndNX2hXeKAfaA6Vq01" class="btn-plan-outline">Get Started →</a>
+      </div>
+
+      <!-- Professional -->
+      <div class="pricing-card featured">
+        <div class="featured-badge">MOST POPULAR</div>
+        <div class="plan-name mono">Professional</div>
+        <div class="plan-price">$599</div>
+        <div class="plan-period">/month</div>
+        <ul class="plan-features">
+          <li>Unlimited estimates</li>
+          <li>All 8 departments</li>
+          <li>PDF, CSV & Excel export</li>
+          <li>Priority support</li>
+          <li>Up to 5 users</li>
+          <li>Custom rate cards</li>
+          <li>API access</li>
+        </ul>
+        <a href="https://buy.stripe.com/dRmcMX39jaOt45W9Qg6Vq02" class="btn-plan">Subscribe Now →</a>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="pricing-card">
+        <div class="plan-name mono">Enterprise</div>
+        <div class="plan-price">$999</div>
+        <div class="plan-period">/month</div>
+        <ul class="plan-features">
+          <li>Unlimited estimates</li>
+          <li>All 8 departments</li>
+          <li>All export formats</li>
+          <li>Dedicated support</li>
+          <li>Unlimited users</li>
+          <li>Custom integrations</li>
+          <li>White-label option</li>
+          <li>SLA guarantee</li>
+        </ul>
+        <a href="https://buy.stripe.com/fZuaEPeS1f4JfOE3rS6Vq03" class="btn-plan-outline">Get Started →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section>
+    <div class="cta-section">
+      <div class="section-label mono" style="text-align:center">// GET STARTED TODAY</div>
+      <h2 style="margin-bottom:1rem">Ready to Transform Your <span>Estimating Workflow?</span></h2>
+      <p style="color:var(--muted);max-width:500px;margin:0 auto 2rem;line-height:1.7">Join production companies that have cut estimation time by 90% and improved bid accuracy with TD Tools.</p>
+      <a href="https://buy.stripe.com/dRmcMX39jaOt45W9Qg6Vq02" class="btn-primary" style="font-size:1.1rem;padding:1.1rem 2.5rem;display:inline-block">Start Free Trial — $599/mo →</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 <strong>Agentic Sales Inc</strong> · <a href="https://agenticpipeline.io">agenticpipeline.io</a> · Built with AI for the live events industry</p>
+  </footer>
+
+</body>
+</html>
