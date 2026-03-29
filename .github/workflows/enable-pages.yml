@@ -1,0 +1,41 @@
+name: Enable GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  pages: write
+  contents: read
+
+jobs:
+  enable-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable GitHub Pages via API
+        run: |
+          RESPONSE=$(curl -s -o /tmp/pages_response.json -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/agenticpipeline/td-tools-app/pages \
+            -d '{"source":{"branch":"main","path":"/"}}')
+
+          echo "HTTP Status: $RESPONSE"
+          cat /tmp/pages_response.json
+
+          if [ "$RESPONSE" = "201" ]; then
+            echo "✅ GitHub Pages enabled successfully!"
+            echo "Site URL: $(cat /tmp/pages_response.json | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("html_url",""))')"
+          elif [ "$RESPONSE" = "409" ]; then
+            echo "✅ GitHub Pages is already enabled."
+            # Get current status
+            curl -s \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/agenticpipeline/td-tools-app/pages
+          else
+            echo "⚠️ Unexpected response: $RESPONSE"
+            echo "If Pages isn't enabled, enable it manually in repo Settings > Pages"
+          fi
