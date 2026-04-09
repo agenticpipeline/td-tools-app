@@ -758,7 +758,9 @@
       });
     });
 
-    const API_URL = 'https://olympics-nursing-employer-knock.trycloudflare.com';
+    let API_URL = '';
+    // Fetch current API URL from config (updated automatically when tunnel changes)
+    fetch('api-config.json?' + Date.now()).then(r => r.json()).then(c => { API_URL = c.api_url; }).catch(() => {});
 
     function runDemo(presetKey) {
       if (running) return;
