@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TD Tools | AI-Powered Labor Estimation for Live Events</title>
   <meta name="description" content="Stop guessing on labor costs. TD Tools uses AI to generate accurate, department-by-department crew estimates from your event brief in seconds." />
+  <link rel="canonical" href="https://agenticpipeline.github.io/td-tools-app/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://agenticpipeline.github.io/td-tools-app/" />
+  <meta property="og:title" content="TD Tools | AI-Powered Labor Estimation for Live Events" />
+  <meta property="og:description" content="Generate accurate crew estimates from your event brief in seconds. Audio, lighting, video, stage — all departments covered." />
+  <meta property="og:image" content="https://agenticpipeline.github.io/td-tools-app/og-image.png" />
+  <meta property="og:site_name" content="TD Tools" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="TD Tools | AI Crew Estimation for Live Events" />
+  <meta name="twitter:description" content="Stop guessing on labor costs. AI-powered estimates for audio, lighting, video, stage & more." />
+  <meta name="twitter:image" content="https://agenticpipeline.github.io/td-tools-app/og-image.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0f1e' width='100' height='100' rx='20'/><text x='50' y='68' font-size='55' font-family='monospace' font-weight='bold' fill='%2300d4ff' text-anchor='middle'>TD</text></svg>" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -275,6 +294,7 @@
     .demo-preset {
       background: rgba(0,212,255,0.08);
       border: 1px solid rgba(0,212,255,0.2);
+      appearance: none;
       border-radius: 6px;
       padding: 0.35rem 0.75rem;
       font-size: 0.75rem;
@@ -330,22 +350,37 @@
     }
     footer a { color: var(--cyan); text-decoration: none; }
 
+    @media (max-width: 900px) {
+      .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 640px) {
       nav { padding: 0 1rem; }
       .pipeline { gap: 0; }
       .pipeline-step::after { display: none; }
+      .demo-input-row { flex-direction: column; }
+      .demo-btn { width: 100%; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+      .stat-number { font-size: 2rem; }
+      h1 { font-size: 2rem; }
+      .hero { padding: 5rem 1rem 3rem; }
+      .demo-output { font-size: 0.7rem; padding: 1rem; overflow-x: auto; }
     }
   </style>
 </head>
 <body>
 
-  <nav>
-    <a class="nav-logo" href="#">TD_TOOLS</a>
+  <a href="#main-content" class="skip-nav" style="position:absolute;left:-9999px;top:0;z-index:999;background:var(--cyan);color:var(--blue-dark);padding:0.5rem 1rem;font-weight:700;text-decoration:none;">Skip to content</a>
+
+  <nav aria-label="Main navigation">
+    <a class="nav-logo" href="/">TD_TOOLS</a>
     <a class="nav-cta mono" href="#pricing">Get Started →</a>
   </nav>
 
   <!-- Hero -->
-  <div class="hero">
+  <div class="hero" id="main-content">
     <div class="badge mono">AGENTIC PIPELINE // LIVE EVENTS AI</div>
     <h1>Stop Guessing.<br/><span>Start Estimating.</span></h1>
     <p class="hero-sub">TD Tools uses AI to generate accurate, department-by-department crew estimates from your event brief — in seconds, not hours.</p>
@@ -370,7 +405,7 @@
   <hr class="divider" />
 
   <!-- How it works -->
-  <section id="how-it-works">
+  <section id="how-it-works" aria-label="How it works">
     <div class="section-label mono">// HOW IT WORKS</div>
     <h2>From Brief to <span>Budget</span> in Seconds</h2>
     <p class="section-sub">Just describe your event. TD Tools handles the rest — crew counts, day rates, and full department breakdowns.</p>
@@ -401,7 +436,7 @@
   <hr class="divider" />
 
   <!-- Demo -->
-  <section id="demo">
+  <section id="demo" aria-label="Live demo">
     <div class="section-label mono">// TRY IT NOW</div>
     <h2>See TD Tools <span>In Action</span></h2>
     <p class="section-sub">Describe any live event and watch TD Tools generate a full crew estimate in real time.</p>
@@ -414,11 +449,11 @@
       </div>
       <div class="demo-body">
         <div class="demo-presets">
-          <span class="demo-preset" data-preset="corporate">Corporate Keynote</span>
-          <span class="demo-preset" data-preset="concert">Arena Concert</span>
-          <span class="demo-preset" data-preset="festival">Music Festival</span>
-          <span class="demo-preset" data-preset="gala">Award Gala</span>
-          <span class="demo-preset" data-preset="broadcast">Live Broadcast</span>
+          <button class="demo-preset" data-preset="corporate">Corporate Keynote</button>
+          <button class="demo-preset" data-preset="concert">Arena Concert</button>
+          <button class="demo-preset" data-preset="festival">Music Festival</button>
+          <button class="demo-preset" data-preset="gala">Award Gala</button>
+          <button class="demo-preset" data-preset="broadcast">Live Broadcast</button>
         </div>
         <div class="demo-input-row">
           <input class="demo-input" id="demoInput" type="text" placeholder="Describe your event... e.g. '3-day corporate conference, 2000 attendees, main stage + 4 breakouts'" />
@@ -432,7 +467,7 @@
   <hr class="divider" />
 
   <!-- Features -->
-  <section id="features">
+  <section id="features" aria-label="Capabilities">
     <div class="section-label mono">// CAPABILITIES</div>
     <h2>Built for <span>Production Professionals</span></h2>
     <p class="section-sub">Every feature designed around how real TD and production teams actually work.</p>
@@ -473,7 +508,7 @@
   <hr class="divider" />
 
   <!-- Pricing -->
-  <section id="pricing">
+  <section id="pricing" aria-label="Pricing">
     <div class="section-label mono">// PRICING</div>
     <h2>Simple, <span>Transparent</span> Pricing</h2>
     <p class="section-sub">No contracts. No per-seat fees. Cancel anytime. Start generating estimates today.</p>
@@ -840,6 +875,7 @@
 
   <footer>
     <p>© 2026 <strong>Agentic Sales Inc</strong> · <a href="https://agenticpipeline.github.io/td-tools-app/">TD Tools</a> · Built with AI for the live events industry</p>
+    <p style="margin-top:0.5rem;font-size:0.75rem;"><a href="mailto:support@agenticpipeline.io">Contact</a> · <a href="#privacy">Privacy Policy</a> · <a href="#terms">Terms of Service</a></p>
   </footer>
 
 </body>
