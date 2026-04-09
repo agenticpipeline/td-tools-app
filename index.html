@@ -722,6 +722,8 @@
       });
     });
 
+    const API_URL = 'https://olympics-nursing-employer-knock.trycloudflare.com';
+
     function runDemo(presetKey) {
       if (running) return;
       const input = document.getElementById('demoInput');
@@ -739,8 +741,15 @@
       output.innerHTML = '<span class="demo-cursor"></span>';
       output.classList.add('active');
 
-      const lines = presetKey && presets[presetKey] ? presets[presetKey].lines : genericLines;
+      // Use presets for instant demo, live API for custom input
+      if (presetKey && presets[presetKey]) {
+        animateLines(presets[presetKey].lines, output, btn);
+      } else {
+        fetchLiveEstimate(input.value.trim(), output, btn);
+      }
+    }
 
+    function animateLines(lines, output, btn) {
       let i = 0;
       function addLine() {
         if (i >= lines.length) {
@@ -768,13 +777,68 @@
         const delay = line.type === 'header' ? 600 : line.type === 'dept' ? 300 : line.type === 'total' ? 500 : 120;
         setTimeout(addLine, delay);
       }
-
       setTimeout(addLine, 400);
+    }
+
+    async function fetchLiveEstimate(description, output, btn) {
+      // Show analyzing header
+      const header = document.createElement('div');
+      header.classList.add('line', 'visible');
+      header.style.color = 'var(--orange)';
+      header.style.fontWeight = '700';
+      header.textContent = '⚡ ANALYZING EVENT BRIEF (LIVE AI)...';
+      const cursor = output.querySelector('.demo-cursor');
+      output.insertBefore(header, cursor);
+
+      try {
+        const resp = await fetch(API_URL + '/demo/estimate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ description }),
+        });
+        const data = await resp.json();
+
+        if (data.status === 'success' && data.estimate && data.estimate.departments) {
+          const est = data.estimate;
+          const lines = [];
+
+          lines.push({ type: 'info', text: 'Event: ' + (est.event_summary || description) });
+
+          for (const dept of est.departments) {
+            const pad = '─'.repeat(Math.max(0, 34 - dept.name.length));
+            lines.push({ type: 'dept', text: '── ' + dept.name + ' ' + pad });
+            for (const role of dept.roles) {
+              const title = (role.title || '').padEnd(20);
+              const count = ('×' + role.count).padEnd(5);
+              const rate = ('$' + role.rate + '/day').padEnd(12);
+              const days = role.days + (role.days === 1 ? ' day' : ' days');
+              const sub = '$' + role.subtotal.toLocaleString();
+              lines.push({ type: 'role', text: title + count + rate + days.padEnd(10) + sub });
+            }
+          }
+
+          lines.push({ type: 'total', text: 'TOTAL ESTIMATE                          $' + (est.total_estimate || 0).toLocaleString() });
+          lines.push({ type: 'info', text: '✓ ' + (est.total_crew || '?') + ' crew · ' + (est.days || '?') + ' days · ' + est.departments.length + ' departments' });
+          lines.push({ type: 'info', text: '→ Powered by live AI · Sign up for full estimates with custom rate cards' });
+
+          animateLines(lines, output, btn);
+        } else {
+          throw new Error(data.error || 'Unexpected response');
+        }
+      } catch (err) {
+        // Fallback to generic on error
+        const errEl = document.createElement('div');
+        errEl.classList.add('line', 'visible');
+        errEl.style.color = 'var(--orange)';
+        errEl.textContent = '⚠ Live API unavailable — showing sample estimate';
+        output.insertBefore(errEl, output.querySelector('.demo-cursor'));
+        setTimeout(() => animateLines(genericLines, output, btn), 500);
+      }
     }
   </script>
 
   <footer>
-    <p>© 2025 <strong>Agentic Sales Inc</strong> · <a href="https://agenticpipeline.io">agenticpipeline.io</a> · Built with AI for the live events industry</p>
+    <p>© 2026 <strong>Agentic Sales Inc</strong> · <a href="https://agenticpipeline.github.io/td-tools-app/">TD Tools</a> · Built with AI for the live events industry</p>
   </footer>
 
 </body>
