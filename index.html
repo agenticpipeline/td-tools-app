@@ -326,6 +326,32 @@
     .demo-cursor { display: inline-block; width: 8px; height: 14px; background: var(--cyan); animation: blink 0.8s infinite; vertical-align: middle; margin-left: 2px; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
+    /* Demo tabs */
+    .demo-tabs { display: flex; gap: 0; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(0,212,255,0.15); }
+    .demo-tab {
+      appearance: none; border: none; background: none;
+      padding: 0.5rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+      color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
+    }
+    .demo-tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+    .demo-tab:hover { color: var(--text); }
+    .demo-tab-content { display: none; }
+    .demo-tab-content.active { display: block; }
+    .demo-upload-zone {
+      border: 2px dashed rgba(0,212,255,0.25);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 1rem;
+    }
+    .demo-upload-zone:hover, .demo-upload-zone.dragover { border-color: var(--cyan); background: rgba(0,212,255,0.05); }
+    .demo-upload-zone p { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.5rem; }
+    .demo-upload-zone .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .demo-upload-zone a { color: var(--cyan); font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; }
+    .demo-file-name { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--cyan); margin-bottom: 1rem; }
+
     /* Divider */
     .divider { border: none; border-top: 1px solid rgba(0,212,255,0.1); margin: 0; }
 
@@ -439,7 +465,7 @@
   <section id="demo" aria-label="Live demo">
     <div class="section-label mono">// TRY IT NOW</div>
     <h2>See TD Tools <span>In Action</span></h2>
-    <p class="section-sub">Describe any live event and watch TD Tools generate a full crew estimate in real time.</p>
+    <p class="section-sub">Describe any live event or upload a Vectorworks CSV and watch TD Tools generate a full crew estimate.</p>
     <div class="demo-container">
       <div class="demo-toolbar">
         <div class="demo-dot"></div>
@@ -448,17 +474,36 @@
         <div class="demo-toolbar-title">td-tools — estimate engine</div>
       </div>
       <div class="demo-body">
-        <div class="demo-presets">
-          <button class="demo-preset" data-preset="corporate">Corporate Keynote</button>
-          <button class="demo-preset" data-preset="concert">Arena Concert</button>
-          <button class="demo-preset" data-preset="festival">Music Festival</button>
-          <button class="demo-preset" data-preset="gala">Award Gala</button>
-          <button class="demo-preset" data-preset="broadcast">Live Broadcast</button>
+        <div class="demo-tabs">
+          <button class="demo-tab active" data-tab="describe" onclick="switchTab('describe')">Describe Event</button>
+          <button class="demo-tab" data-tab="upload" onclick="switchTab('upload')">Upload CSV</button>
         </div>
-        <div class="demo-input-row">
-          <input class="demo-input" id="demoInput" type="text" placeholder="Describe your event... e.g. '3-day corporate conference, 2000 attendees, main stage + 4 breakouts'" />
-          <button class="demo-btn" id="demoBtn" onclick="runDemo()">Estimate →</button>
+
+        <div class="demo-tab-content active" id="tab-describe">
+          <div class="demo-presets">
+            <button class="demo-preset" data-preset="corporate">Corporate Keynote</button>
+            <button class="demo-preset" data-preset="concert">Arena Concert</button>
+            <button class="demo-preset" data-preset="festival">Music Festival</button>
+            <button class="demo-preset" data-preset="gala">Award Gala</button>
+            <button class="demo-preset" data-preset="broadcast">Live Broadcast</button>
+          </div>
+          <div class="demo-input-row">
+            <input class="demo-input" id="demoInput" type="text" placeholder="Describe your event... e.g. '3-day corporate conference, 2000 attendees, main stage + 4 breakouts'" />
+            <button class="demo-btn" id="demoBtn" onclick="runDemo()">Estimate →</button>
+          </div>
         </div>
+
+        <div class="demo-tab-content" id="tab-upload">
+          <div class="demo-upload-zone" id="uploadZone" onclick="document.getElementById('csvFile').click()">
+            <div class="upload-icon">📄</div>
+            <p>Drag & drop a Vectorworks CSV here, or click to browse</p>
+            <a href="sample-equipment.csv" download onclick="event.stopPropagation()">Download sample CSV →</a>
+          </div>
+          <input type="file" id="csvFile" accept=".csv,.tsv" style="display:none" onchange="handleFileSelect(event)" />
+          <div class="demo-file-name" id="fileName" style="display:none"></div>
+          <button class="demo-btn" id="uploadBtn" onclick="runCsvDemo()" style="width:100%;display:none">Run Full Pipeline →</button>
+        </div>
+
         <div class="demo-output" id="demoOutput"></div>
       </div>
     </div>
@@ -763,6 +808,107 @@
     // Fetch current API URL from config (updated automatically when tunnel changes)
     fetch('api-config.json?' + Date.now()).then(r => r.json()).then(c => { API_URL = c.api_url; }).catch(() => {});
 
+    let uploadedCsv = null;
+
+    function switchTab(tab) {
+      document.querySelectorAll('.demo-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+      document.querySelectorAll('.demo-tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + tab));
+    }
+
+    // File upload handling
+    const uploadZone = document.getElementById('uploadZone');
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+
+    function handleFileSelect(e) { if (e.target.files.length) handleFile(e.target.files[0]); }
+
+    function handleFile(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        uploadedCsv = e.target.result;
+        document.getElementById('fileName').textContent = '📄 ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+        document.getElementById('fileName').style.display = 'block';
+        document.getElementById('uploadBtn').style.display = 'block';
+      };
+      reader.readAsText(file);
+    }
+
+    async function runCsvDemo() {
+      if (running || !uploadedCsv || !API_URL) return;
+      running = true;
+      const output = document.getElementById('demoOutput');
+      const btn = document.getElementById('uploadBtn');
+      btn.disabled = true;
+      btn.textContent = 'Running pipeline...';
+      output.innerHTML = '<span class="demo-cursor"></span>';
+      output.classList.add('active');
+
+      const header = document.createElement('div');
+      header.classList.add('line', 'visible');
+      header.style.color = 'var(--orange)';
+      header.style.fontWeight = '700';
+      header.textContent = '⚡ RUNNING FULL ESTIMATION PIPELINE...';
+      output.insertBefore(header, output.querySelector('.demo-cursor'));
+
+      try {
+        const resp = await fetch(API_URL + '/agents/orchestrate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            agent_type: 'orchestrator',
+            action: 'start_pipeline',
+            input_data: { action: 'start_pipeline', file_content: uploadedCsv, file_format: 'csv' }
+          }),
+        });
+        const data = await resp.json();
+
+        const lines = [];
+        if (data.status === 'success' && data.data) {
+          const d = data.data;
+          lines.push({ type: 'info', text: 'Pipeline: ' + (d.completed_steps || []).join(' → ') });
+          if (d.estimate) {
+            const est = d.estimate;
+            lines.push({ type: 'info', text: 'Project: ' + (est.project_name || 'Equipment Estimate') });
+            if (est.departments) {
+              for (const [name, dept] of Object.entries(est.departments)) {
+                lines.push({ type: 'dept', text: '── ' + name.toUpperCase() + ' ──────────────────────────' });
+                lines.push({ type: 'role', text: 'Crew: ' + dept.crew_size + ' · Install: ' + dept.install_hours.toFixed(1) + 'h · Strike: ' + dept.dismantle_hours.toFixed(1) + 'h' });
+                lines.push({ type: 'role', text: 'Equipment items: ' + dept.equipment_count + ' · Avg complexity: ' + dept.complexity_avg.toFixed(1) });
+                lines.push({ type: 'role', text: 'Dept cost: $' + dept.total_cost.toLocaleString() });
+              }
+            }
+            lines.push({ type: 'total', text: 'TOTAL: ' + (est.total_crew_hours || 0).toFixed(1) + ' crew-hours · $' + (est.total_labor_cost || 0).toLocaleString() });
+            lines.push({ type: 'info', text: (est.schedule_feasible ? '✓ Schedule feasible' : '⚠ Schedule may be tight') });
+            if (est.warnings && est.warnings.length) {
+              est.warnings.forEach(w => lines.push({ type: 'info', text: '⚠ ' + w }));
+            }
+          }
+        } else {
+          lines.push({ type: 'info', text: 'Status: ' + (data.status || 'unknown') });
+          if (data.error) lines.push({ type: 'info', text: 'Error: ' + data.error });
+          if (data.data) lines.push({ type: 'info', text: JSON.stringify(data.data).slice(0, 200) });
+        }
+        lines.push({ type: 'info', text: '→ Full pipeline with validation, interview, and detailed estimates available to subscribers' });
+        animateLines(lines, output, btn);
+      } catch (err) {
+        const errEl = document.createElement('div');
+        errEl.classList.add('line', 'visible');
+        errEl.style.color = 'var(--orange)';
+        errEl.textContent = '⚠ Pipeline unavailable — ' + err.message;
+        output.insertBefore(errEl, output.querySelector('.demo-cursor'));
+        const cursor = output.querySelector('.demo-cursor');
+        if (cursor) cursor.remove();
+        running = false;
+        btn.disabled = false;
+        btn.textContent = 'Run Full Pipeline →';
+      }
+    }
+
     function getDemoCount() { return parseInt(localStorage.getItem('td_demo_count') || '0'); }
     function incDemoCount() { const c = getDemoCount() + 1; localStorage.setItem('td_demo_count', String(c)); return c; }
 
@@ -799,7 +945,7 @@
           if (cursor) cursor.remove();
           running = false;
           btn.disabled = false;
-          btn.textContent = 'Estimate →';
+          btn.textContent = btn.id === 'uploadBtn' ? 'Run Full Pipeline →' : 'Estimate →';
           return;
         }
         const line = lines[i];

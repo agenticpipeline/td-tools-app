@@ -1,0 +1,18 @@
+name,dept,qty,install_type,weight_kg,complexity,install_min,dismantle_min,notes
+ETC Source Four 750W,lighting,24,rigged,5.5,3,15,10,Standard venue rigging
+Martin MAC Aura XB,lighting,12,rigged,7.2,4,20,15,Moving head wash
+ETC ColorSource Spot,lighting,8,rigged,6.1,3,15,10,Profile spot
+grandMA3 Full-Size,lighting,1,on_stage,35,5,45,30,Main lighting console
+d&b audiotechnik V-Series,audio,16,flown,38,4,25,20,Main PA L/R arrays
+d&b audiotechnik SL-SUB,audio,8,ground_support,65,3,20,15,Subwoofer array
+Yamaha RIVAGE PM7,audio,1,on_stage,42,5,40,25,FOH console
+Shure Axient Digital,audio,24,off_stage,2.1,3,10,5,Wireless microphone systems
+ROE Visual CB5 LED Panel,video,48,rigged,8.5,4,20,15,Upstage LED wall 24x12
+Barco E2 Presentation Switcher,video,1,off_stage,25,5,60,30,Video switching/processing
+Sony HDC-5500 Camera,video,4,ground_support,6.5,4,30,15,Broadcast cameras with tripods
+disguise gx 2c Media Server,video,2,off_stage,18,5,45,20,Content playback and mapping
+CM Lodestar 1-Ton Chain Hoist,scenic,12,rigged,45,4,30,20,Overhead rigging points
+Stageline SL320 Deck,scenic,16,on_stage,85,3,25,20,Stage deck 4x8 sections
+Steel Truss 12x12 Box,scenic,8,flown,42,4,35,25,Overhead truss grid
+Pipe and Drape 8ft,softgoods,20,ground_support,8,2,10,8,Black drape surround
+Custom Scenic Backdrop,softgoods,2,flown,35,3,25,15,Printed fabric backdrop 40x20ft
