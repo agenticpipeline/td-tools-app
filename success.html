@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to TD Tools</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0f1e' width='100' height='100' rx='20'/><text x='50' y='68' font-size='55' font-family='monospace' font-weight='bold' fill='%2300d4ff' text-anchor='middle'>TD</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --cyan: #00d4ff; --orange: #ff6b35; --blue-dark: #0a0f1e; --text: #e2e8f0; --muted: #94a3b8; }
+    body { font-family: 'Inter', sans-serif; background: var(--blue-dark); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+    .card { background: rgba(13,27,62,0.6); border: 1px solid rgba(0,212,255,0.3); border-radius: 16px; padding: 3rem; max-width: 600px; width: 100%; }
+    .logo { font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 700; color: var(--cyan); margin-bottom: 2rem; }
+    .check { font-size: 3rem; margin-bottom: 1rem; }
+    h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    h1 span { color: var(--cyan); }
+    .subtitle { color: var(--muted); margin-bottom: 2rem; line-height: 1.6; }
+    .api-key-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(0,212,255,0.2); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; }
+    .api-key-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--cyan); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .api-key-value { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text); word-break: break-all; cursor: pointer; padding: 0.5rem; background: rgba(0,0,0,0.3); border-radius: 4px; }
+    .api-key-value:hover { background: rgba(0,212,255,0.1); }
+    .copied { color: var(--cyan); font-size: 0.75rem; margin-top: 0.5rem; display: none; }
+    .steps { list-style: none; margin-bottom: 2rem; }
+    .steps li { display: flex; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; color: var(--muted); }
+    .steps li .num { font-family: 'JetBrains Mono', monospace; color: var(--cyan); font-weight: 700; flex-shrink: 0; }
+    .btn { display: inline-block; background: linear-gradient(135deg, var(--cyan), #0099cc); color: var(--blue-dark); font-weight: 700; padding: 0.875rem 1.5rem; border-radius: 8px; text-decoration: none; font-size: 0.95rem; transition: opacity 0.2s; }
+    .btn:hover { opacity: 0.85; }
+    .btn-outline { display: inline-block; border: 1px solid rgba(0,212,255,0.4); color: var(--cyan); padding: 0.875rem 1.5rem; border-radius: 8px; text-decoration: none; font-size: 0.95rem; margin-left: 0.5rem; }
+    .loading { text-align: center; color: var(--muted); padding: 2rem; }
+    .error { color: var(--orange); }
+    code { font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.3); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">TD_TOOLS</div>
+    <div id="content">
+      <div class="loading">
+        <div class="check">⏳</div>
+        <p>Setting up your account...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+    const content = document.getElementById('content');
+
+    // Fetch API URL
+    fetch('api-config.json?' + Date.now())
+      .then(r => r.json())
+      .then(config => {
+        if (sessionId && config.api_url) {
+          // Verify the checkout session and get API key
+          showSuccess(config.api_url);
+        } else {
+          showSuccess(null);
+        }
+      })
+      .catch(() => showSuccess(null));
+
+    function showSuccess(apiUrl) {
+      content.innerHTML = `
+        <div class="check">✅</div>
+        <h1>Welcome to <span>TD Tools</span></h1>
+        <p class="subtitle">Your subscription is active. Here's everything you need to start generating crew estimates.</p>
+
+        <div class="api-key-box">
+          <div class="api-key-label">// YOUR API ENDPOINT</div>
+          <div class="api-key-value" onclick="copyText(this)">${apiUrl || 'https://api.tdtools.io'}/agents/orchestrate</div>
+          <div class="copied" id="copied1">Copied to clipboard!</div>
+        </div>
+
+        <div class="api-key-box">
+          <div class="api-key-label">// API DOCUMENTATION</div>
+          <div class="api-key-value" onclick="window.open('${apiUrl || '#'}/docs', '_blank')">${apiUrl || 'https://api.tdtools.io'}/docs → Click to open</div>
+        </div>
+
+        <h3 style="margin-bottom:1rem;font-size:1rem;">Quick Start</h3>
+        <ol class="steps">
+          <li><span class="num">01</span> Export your equipment list from Vectorworks as CSV</li>
+          <li><span class="num">02</span> POST the CSV content to <code>/agents/orchestrate</code></li>
+          <li><span class="num">03</span> Get back a full crew estimate with department breakdowns</li>
+          <li><span class="num">04</span> Or use <code>/demo/estimate</code> with a text description for quick estimates</li>
+        </ol>
+
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <a href="${apiUrl || '#'}/docs" target="_blank" class="btn">Open API Docs →</a>
+          <a href="/" class="btn-outline">Back to TD Tools</a>
+        </div>
+      `;
+    }
+
+    function copyText(el) {
+      navigator.clipboard.writeText(el.textContent.replace(' → Click to open', ''));
+      const copied = el.nextElementSibling;
+      if (copied) { copied.style.display = 'block'; setTimeout(() => copied.style.display = 'none', 2000); }
+    }
+  </script>
+</body>
+</html>
