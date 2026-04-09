@@ -562,7 +562,7 @@
           <li>White-label option</li>
           <li>SLA guarantee</li>
         </ul>
-        <a href="https://buy.stripe.com/dRmaEP7pzf4J1XOd2s6Vq06" class="btn-plan-outline">Get Started →</a>
+        <a href="mailto:enterprise@agenticpipeline.io?subject=TD%20Tools%20Enterprise%20Inquiry" class="btn-plan-outline">Contact Sales →</a>
       </div>
 
     </div>
@@ -759,8 +759,12 @@
     });
 
     let API_URL = '';
+    const MAX_FREE_DEMOS = 3;
     // Fetch current API URL from config (updated automatically when tunnel changes)
     fetch('api-config.json?' + Date.now()).then(r => r.json()).then(c => { API_URL = c.api_url; }).catch(() => {});
+
+    function getDemoCount() { return parseInt(localStorage.getItem('td_demo_count') || '0'); }
+    function incDemoCount() { const c = getDemoCount() + 1; localStorage.setItem('td_demo_count', String(c)); return c; }
 
     function runDemo(presetKey) {
       if (running) return;
@@ -819,6 +823,24 @@
     }
 
     async function fetchLiveEstimate(description, output, btn) {
+      // Check demo usage limit
+      if (getDemoCount() >= MAX_FREE_DEMOS) {
+        const cursor = output.querySelector('.demo-cursor');
+        if (cursor) cursor.remove();
+        const limit = document.createElement('div');
+        limit.classList.add('line', 'visible');
+        limit.style.color = 'var(--orange)';
+        limit.style.fontWeight = '700';
+        limit.innerHTML = '⚡ You\'ve used all ' + MAX_FREE_DEMOS + ' free AI estimates.<br><br>' +
+          '<a href="#pricing" style="color:var(--cyan);text-decoration:underline;">Subscribe for unlimited estimates →</a><br><br>' +
+          '<span style="color:var(--muted);font-weight:400;font-size:0.75rem;">Preset demos above are always free.</span>';
+        output.appendChild(limit);
+        running = false;
+        btn.disabled = false;
+        btn.textContent = 'Estimate →';
+        return;
+      }
+
       // Show analyzing header
       const header = document.createElement('div');
       header.classList.add('line', 'visible');
@@ -857,7 +879,9 @@
 
           lines.push({ type: 'total', text: 'TOTAL ESTIMATE                          $' + (est.total_estimate || 0).toLocaleString() });
           lines.push({ type: 'info', text: '✓ ' + (est.total_crew || '?') + ' crew · ' + (est.days || '?') + ' days · ' + est.departments.length + ' departments' });
-          lines.push({ type: 'info', text: '→ Powered by live AI · Sign up for full estimates with custom rate cards' });
+          const used = incDemoCount();
+          const remaining = MAX_FREE_DEMOS - used;
+          lines.push({ type: 'info', text: '→ Powered by live AI · ' + (remaining > 0 ? remaining + ' free estimate' + (remaining !== 1 ? 's' : '') + ' remaining' : 'Subscribe for unlimited estimates') });
 
           animateLines(lines, output, btn);
         } else {
