@@ -856,44 +856,40 @@
       output.insertBefore(header, output.querySelector('.demo-cursor'));
 
       try {
-        const resp = await fetch(API_URL + '/agents/orchestrate', {
+        const resp = await fetch(API_URL + '/demo/csv-estimate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            agent_type: 'orchestrator',
-            action: 'start_pipeline',
-            input_data: { action: 'start_pipeline', file_content: uploadedCsv, file_format: 'csv' }
-          }),
+          body: JSON.stringify({ file_content: uploadedCsv, file_format: 'csv' }),
         });
         const data = await resp.json();
 
         const lines = [];
-        if (data.status === 'success' && data.data) {
-          const d = data.data;
-          lines.push({ type: 'info', text: 'Pipeline: ' + (d.completed_steps || []).join(' → ') });
-          if (d.estimate) {
-            const est = d.estimate;
-            lines.push({ type: 'info', text: 'Project: ' + (est.project_name || 'Equipment Estimate') });
-            if (est.departments) {
-              for (const [name, dept] of Object.entries(est.departments)) {
-                lines.push({ type: 'dept', text: '── ' + name.toUpperCase() + ' ──────────────────────────' });
-                lines.push({ type: 'role', text: 'Crew: ' + dept.crew_size + ' · Install: ' + dept.install_hours.toFixed(1) + 'h · Strike: ' + dept.dismantle_hours.toFixed(1) + 'h' });
-                lines.push({ type: 'role', text: 'Equipment items: ' + dept.equipment_count + ' · Avg complexity: ' + dept.complexity_avg.toFixed(1) });
-                lines.push({ type: 'role', text: 'Dept cost: $' + dept.total_cost.toLocaleString() });
+        if (data.status === 'success' && data.estimate) {
+          const est = data.estimate;
+          lines.push({ type: 'info', text: 'Project: ' + (est.project_name || 'Equipment Estimate') + ' · ' + data.equipment_count + ' items · ' + data.validations + ' safety checks' });
+
+          if (est.departments) {
+            for (const [name, dept] of Object.entries(est.departments)) {
+              const pad = '─'.repeat(Math.max(0, 34 - name.length));
+              lines.push({ type: 'dept', text: '── ' + name.toUpperCase() + ' ' + pad });
+              lines.push({ type: 'role', text: 'Crew: ' + dept.crew_size + '    Install: ' + dept.install_hours.toFixed(1) + 'h    Strike: ' + dept.dismantle_hours.toFixed(1) + 'h' });
+              lines.push({ type: 'role', text: 'Equipment: ' + dept.equipment_count + ' items    Complexity: ' + dept.complexity_avg.toFixed(1) + '/5' });
+              lines.push({ type: 'role', text: 'Dept cost: $' + Math.round(dept.total_cost).toLocaleString() });
+              if (dept.critical_items && dept.critical_items.length) {
+                dept.critical_items.forEach(item => lines.push({ type: 'role', text: '⚠ ' + item }));
               }
             }
-            lines.push({ type: 'total', text: 'TOTAL: ' + (est.total_crew_hours || 0).toFixed(1) + ' crew-hours · $' + (est.total_labor_cost || 0).toLocaleString() });
-            lines.push({ type: 'info', text: (est.schedule_feasible ? '✓ Schedule feasible' : '⚠ Schedule may be tight') });
-            if (est.warnings && est.warnings.length) {
-              est.warnings.forEach(w => lines.push({ type: 'info', text: '⚠ ' + w }));
-            }
+          }
+
+          lines.push({ type: 'total', text: 'TOTAL: ' + Math.round(est.total_crew_hours || 0) + ' crew-hours · $' + Math.round(est.total_labor_cost || 0).toLocaleString() });
+          lines.push({ type: 'info', text: (est.schedule_feasible ? '✓ Schedule feasible' : '⚠ Schedule may require additional days or crew') });
+          if (est.warnings && est.warnings.length) {
+            est.warnings.slice(0, 3).forEach(w => lines.push({ type: 'info', text: '⚠ ' + w }));
           }
         } else {
-          lines.push({ type: 'info', text: 'Status: ' + (data.status || 'unknown') });
-          if (data.error) lines.push({ type: 'info', text: 'Error: ' + data.error });
-          if (data.data) lines.push({ type: 'info', text: JSON.stringify(data.data).slice(0, 200) });
+          lines.push({ type: 'info', text: 'Error: ' + (data.error || 'Unknown error') });
         }
-        lines.push({ type: 'info', text: '→ Full pipeline with validation, interview, and detailed estimates available to subscribers' });
+        lines.push({ type: 'info', text: '→ Subscribe for custom rate cards, interview step, and exportable reports' });
         animateLines(lines, output, btn);
       } catch (err) {
         const errEl = document.createElement('div');
