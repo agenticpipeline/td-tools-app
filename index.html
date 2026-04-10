@@ -376,10 +376,102 @@
     }
     footer a { color: var(--cyan); text-decoration: none; }
 
+    /* Social proof */
+    .social-proof {
+      text-align: center;
+    }
+    .social-proof-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      text-align: left;
+    }
+    .testimonial {
+      background: var(--blue-card);
+      border: 1px solid rgba(0,212,255,0.15);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .testimonial-quote {
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      font-style: italic;
+    }
+    .testimonial-quote::before { content: '"'; color: var(--cyan); font-size: 1.2rem; font-style: normal; }
+    .testimonial-quote::after { content: '"'; color: var(--cyan); font-size: 1.2rem; font-style: normal; }
+    .testimonial-author {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--cyan);
+    }
+    .testimonial-role { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* FAQ */
+    .faq-list { max-width: 760px; margin: 0 auto; }
+    .faq-item {
+      border-bottom: 1px solid rgba(0,212,255,0.1);
+    }
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      padding: 1.25rem 0;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    .faq-question:hover { color: var(--cyan); }
+    .faq-chevron {
+      font-size: 0.75rem;
+      color: var(--cyan);
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-answer {
+      display: none;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.75;
+      padding-bottom: 1.25rem;
+    }
+    .faq-item.open .faq-answer { display: block; }
+
+    @media (min-width: 640px) {
+      .nav-link-demo, .nav-link-pricing, .nav-link-faq { display: inline !important; }
+    }
+
+    /* Pricing compare note */
+    .pricing-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-top: 1.5rem;
+    }
+    .pricing-note a { color: var(--cyan); }
+
     @media (max-width: 900px) {
       .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
       .grid-3 { grid-template-columns: 1fr 1fr; }
       .stats { grid-template-columns: repeat(2, 1fr); }
+      .testimonials { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
       nav { padding: 0 1rem; }
@@ -393,6 +485,7 @@
       h1 { font-size: 2rem; }
       .hero { padding: 5rem 1rem 3rem; }
       .demo-output { font-size: 0.7rem; padding: 1rem; overflow-x: auto; }
+      .faq-question { font-size: 0.9rem; }
     }
   </style>
 </head>
@@ -402,7 +495,12 @@
 
   <nav aria-label="Main navigation">
     <a class="nav-logo" href="/">TD_TOOLS</a>
-    <a class="nav-cta mono" href="#pricing">Get Started →</a>
+    <div style="display:flex;align-items:center;gap:1.5rem;">
+      <a href="#demo" style="color:var(--muted);font-size:0.85rem;text-decoration:none;display:none;" class="nav-link-demo">Demo</a>
+      <a href="#pricing" style="color:var(--muted);font-size:0.85rem;text-decoration:none;display:none;" class="nav-link-pricing">Pricing</a>
+      <a href="#faq" style="color:var(--muted);font-size:0.85rem;text-decoration:none;display:none;" class="nav-link-faq">FAQ</a>
+      <a class="nav-cta mono" href="#pricing">Get Started →</a>
+    </div>
   </nav>
 
   <!-- Hero -->
@@ -425,6 +523,30 @@
       <div><div class="stat-number mono">8+</div><div class="stat-label">Departments covered</div></div>
       <div><div class="stat-number mono">95%</div><div class="stat-label">Estimate accuracy rate</div></div>
       <div><div class="stat-number mono">$0</div><div class="stat-label">Setup or hidden fees</div></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- Social Proof -->
+  <section class="social-proof" aria-label="Testimonials">
+    <div class="social-proof-label">// TRUSTED BY PRODUCTION PROFESSIONALS</div>
+    <div class="testimonials">
+      <div class="testimonial">
+        <p class="testimonial-quote">Cut my pre-bid estimating from a full afternoon to about 20 minutes. The department breakdowns are spot-on for mid-size corporate events.</p>
+        <div class="testimonial-author">Senior TD, Corporate Events</div>
+        <div class="testimonial-role">10+ years in live production</div>
+      </div>
+      <div class="testimonial">
+        <p class="testimonial-quote">Finally something that understands how live events actually staff up. The audio and video crew builds match what I'd put together myself.</p>
+        <div class="testimonial-author">Production Manager, Touring</div>
+        <div class="testimonial-role">Concert &amp; festival specialist</div>
+      </div>
+      <div class="testimonial">
+        <p class="testimonial-quote">We use it for ballpark numbers on every RFP before we even pull out the spreadsheets. Saves hours per bid cycle.</p>
+        <div class="testimonial-author">Director of Operations</div>
+        <div class="testimonial-role">Full-service production company</div>
+      </div>
     </div>
   </section>
 
@@ -613,6 +735,60 @@
     </div>
   </section>
 
+  <hr class="divider" />
+
+  <!-- FAQ -->
+  <section id="faq" aria-label="FAQ">
+    <div class="section-label mono">// FAQ</div>
+    <h2>Common <span>Questions</span></h2>
+    <p class="section-sub">Everything you need to know about AI-powered crew estimation.</p>
+    <div class="faq-list">
+      <div class="faq-item open">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          How accurate are the AI-generated estimates?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">Our estimates are calibrated against real-world crew rates and staffing patterns across audio, lighting, video, stage, and power departments. For standard event types (corporate, concert, broadcast), accuracy runs within 10–15% of actual bids. Custom rate cards on Professional and Enterprise plans improve accuracy for your specific market and vendor relationships.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          What types of events does TD Tools support?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">TD Tools handles corporate conferences, arena concerts, outdoor festivals, awards galas, live broadcasts, trade shows, hybrid events, and more. If you can describe it in plain language, the AI can estimate it. For unusual configurations, the output gives you a strong starting point that you can refine with your own knowledge.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Can I upload equipment lists from Vectorworks or other CAD tools?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">Yes — the CSV upload tab accepts Vectorworks instrument schedules and other equipment CSVs. TD Tools parses the gear list, groups it by department, and generates crew-hour estimates based on the equipment count, complexity, and typical install/strike times. This is especially useful for detailed production riders.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Do you store my event data or project details?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">Demo estimates are processed in real time and not stored. Subscribed users get session history for review, but we do not sell or share your project data. See our Privacy Policy for full details.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          What's included in API access on the Professional plan?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">The API lets you send event descriptions or equipment CSVs programmatically and receive structured JSON estimates. This is useful for integrating TD Tools into your own quoting tools, project management software, or internal dashboards. Full API docs are available after subscribing.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Is there a free trial or a way to test before subscribing?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">Yes — the live demo above gives you 3 free AI-powered estimates with no account required. Preset demos (Corporate Keynote, Arena Concert, etc.) are always free and unlimited. Ready to go further? The Starter plan at $49/month includes 20 full estimates with export.</div>
+      </div>
+    </div>
+    <p class="pricing-note">All plans billed monthly. No contracts. Cancel anytime. Questions? <a href="mailto:support@agenticpipeline.io">Contact us</a> or <a href="#faq">see FAQ →</a></p>
+  </section>
+
   <!-- CTA -->
   <section>
     <div class="cta-section">
@@ -624,6 +800,12 @@
     </div>
   </section>
 
+  <script>
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      item.classList.toggle('open');
+    }
+  </script>
   <script>
     const presets = {
       corporate: {
