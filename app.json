@@ -29,7 +29,15 @@
       "permissions": []
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "static",
+      "name": "TD Tools",
+      "shortName": "TD Tools",
+      "description": "AI-powered labor estimation for live events",
+      "themeColor": "#0a0f1e",
+      "backgroundColor": "#0a0f1e",
+      "lang": "en"
     },
     "plugins": [
       "expo-font"

@@ -24,8 +24,16 @@
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0f1e' width='100' height='100' rx='20'/><text x='50' y='68' font-size='55' font-family='monospace' font-weight='bold' fill='%2300d4ff' text-anchor='middle'>TD</text></svg>" />
 
+  <meta name="keywords" content="live events, labor estimation, crew estimation, technical director, event production, AI estimation, audio lighting video stage crew" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0a0f1e" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="TD Tools" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -394,10 +402,24 @@
       .hero { padding: 5rem 1rem 3rem; }
       .demo-output { font-size: 0.7rem; padding: 1rem; overflow-x: auto; }
     }
+
+    /* API loading bar */
+    #apiLoadingBar { position:fixed;top:0;left:0;width:0;height:3px;background:linear-gradient(90deg,var(--cyan),#0099cc);z-index:9999;transition:width 0.3s ease,opacity 0.4s;opacity:0;pointer-events:none; }
+    #apiLoadingBar.active { opacity:1; }
+
+    /* Skeleton loading */
+    .demo-skeleton { height:0.85em;border-radius:3px;margin:0.3rem 0;background:linear-gradient(90deg,rgba(0,212,255,0.04) 25%,rgba(0,212,255,0.12) 50%,rgba(0,212,255,0.04) 75%);background-size:200% 100%;animation:skeletonSweep 1.4s ease-in-out infinite; }
+    @keyframes skeletonSweep{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .demo-skeleton.sk-orange { background:linear-gradient(90deg,rgba(255,107,53,0.05) 25%,rgba(255,107,53,0.15) 50%,rgba(255,107,53,0.05) 75%);background-size:200% 100%;animation:skeletonSweep 1.4s ease-in-out infinite; }
+    .sk-w-full { width:100%; }
+    .sk-w-3q { width:75%; }
+    .sk-w-half { width:50%; }
+    .sk-w-2t { width:65%; }
   </style>
 </head>
 <body>
 
+  <div id="apiLoadingBar"></div>
   <a href="#main-content" class="skip-nav" style="position:absolute;left:-9999px;top:0;z-index:999;background:var(--cyan);color:var(--blue-dark);padding:0.5rem 1rem;font-weight:700;text-decoration:none;">Skip to content</a>
 
   <nav aria-label="Main navigation">
@@ -625,6 +647,50 @@
   </section>
 
   <script>
+    // ── Utilities ────────────────────────────────────────────
+    function debounce(fn, ms) {
+      let t;
+      return function(...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); };
+    }
+
+    // ── API Loading Bar ──────────────────────────────────────
+    const _bar = document.getElementById('apiLoadingBar');
+    let _barInterval;
+    function showLoadingBar() {
+      clearInterval(_barInterval);
+      _bar.style.width = '0';
+      _bar.classList.add('active');
+      let w = 0;
+      _barInterval = setInterval(() => {
+        w = Math.min(w + Math.random() * 12 + 3, 88);
+        _bar.style.width = w + '%';
+        if (w >= 88) clearInterval(_barInterval);
+      }, 180);
+    }
+    function hideLoadingBar() {
+      clearInterval(_barInterval);
+      _bar.style.width = '100%';
+      setTimeout(() => { _bar.classList.remove('active'); _bar.style.width = '0'; }, 420);
+    }
+
+    // ── Skeleton loader ──────────────────────────────────────
+    function showSkeleton(output) {
+      output.innerHTML = [
+        '<div class="demo-skeleton sk-orange sk-w-half"></div>',
+        '<div class="demo-skeleton sk-w-3q"></div>',
+        '<div class="demo-skeleton sk-w-full" style="margin-top:0.6rem;background:linear-gradient(90deg,rgba(0,212,255,0.05) 25%,rgba(0,212,255,0.13) 50%,rgba(0,212,255,0.05) 75%);background-size:200% 100%;animation:skeletonSweep 1.4s ease-in-out infinite"></div>',
+        '<div class="demo-skeleton sk-w-full"></div>',
+        '<div class="demo-skeleton sk-w-2t"></div>',
+        '<div class="demo-skeleton sk-w-full" style="margin-top:0.6rem;background:linear-gradient(90deg,rgba(0,212,255,0.05) 25%,rgba(0,212,255,0.13) 50%,rgba(0,212,255,0.05) 75%);background-size:200% 100%;animation:skeletonSweep 1.4s ease-in-out infinite"></div>',
+        '<div class="demo-skeleton sk-w-full"></div>',
+        '<div class="demo-skeleton sk-w-3q"></div>',
+      ].join('');
+      output.classList.add('active');
+    }
+
+    // ── Preset result cache (instant re-selection) ───────────
+    const demoResultCache = {};
+
     const presets = {
       corporate: {
         input: "3-day corporate keynote, 1500 attendees, main stage with IMAG, 2 breakout rooms",
@@ -803,6 +869,11 @@
       });
     });
 
+    // Enter key fires the estimate
+    document.getElementById('demoInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !running) runDemo();
+    });
+
     let API_URL = '';
     const MAX_FREE_DEMOS = 3;
     // Fetch current API URL from config (updated automatically when tunnel changes)
@@ -848,6 +919,7 @@
       output.innerHTML = '<span class="demo-cursor"></span>';
       output.classList.add('active');
 
+      showLoadingBar();
       const header = document.createElement('div');
       header.classList.add('line', 'visible');
       header.style.color = 'var(--orange)';
@@ -890,8 +962,10 @@
           lines.push({ type: 'info', text: 'Error: ' + (data.error || 'Unknown error') });
         }
         lines.push({ type: 'info', text: '→ Subscribe for custom rate cards, interview step, and exportable reports' });
+        hideLoadingBar();
         animateLines(lines, output, btn);
       } catch (err) {
+        hideLoadingBar();
         const errEl = document.createElement('div');
         errEl.classList.add('line', 'visible');
         errEl.style.color = 'var(--orange)';
@@ -914,31 +988,39 @@
       const output = document.getElementById('demoOutput');
       const btn = document.getElementById('demoBtn');
 
-      if (!input.value.trim()) {
-        input.focus();
+      if (!input.value.trim()) { input.focus(); return; }
+
+      // Instant cache hit — no animation needed
+      if (presetKey && demoResultCache[presetKey]) {
+        output.innerHTML = demoResultCache[presetKey];
+        output.classList.add('active');
         return;
       }
 
       running = true;
       btn.disabled = true;
       btn.textContent = 'Estimating...';
-      output.innerHTML = '<span class="demo-cursor"></span>';
-      output.classList.add('active');
 
-      // Use presets for instant demo, live API for custom input
-      if (presetKey && presets[presetKey]) {
-        animateLines(presets[presetKey].lines, output, btn);
-      } else {
-        fetchLiveEstimate(input.value.trim(), output, btn);
-      }
+      // Show skeleton while preparing
+      showSkeleton(output);
+
+      setTimeout(() => {
+        output.innerHTML = '<span class="demo-cursor"></span>';
+        if (presetKey && presets[presetKey]) {
+          animateLines(presets[presetKey].lines, output, btn, presetKey);
+        } else {
+          fetchLiveEstimate(input.value.trim(), output, btn);
+        }
+      }, 220);
     }
 
-    function animateLines(lines, output, btn) {
+    function animateLines(lines, output, btn, cacheKey) {
       let i = 0;
       function addLine() {
         if (i >= lines.length) {
           const cursor = output.querySelector('.demo-cursor');
           if (cursor) cursor.remove();
+          if (cacheKey) demoResultCache[cacheKey] = output.innerHTML;
           running = false;
           btn.disabled = false;
           btn.textContent = btn.id === 'uploadBtn' ? 'Run Full Pipeline →' : 'Estimate →';
@@ -965,8 +1047,10 @@
     }
 
     async function fetchLiveEstimate(description, output, btn) {
+      showLoadingBar();
       // Check demo usage limit
       if (getDemoCount() >= MAX_FREE_DEMOS) {
+        hideLoadingBar();
         const cursor = output.querySelector('.demo-cursor');
         if (cursor) cursor.remove();
         const limit = document.createElement('div');
@@ -1025,11 +1109,13 @@
           const remaining = MAX_FREE_DEMOS - used;
           lines.push({ type: 'info', text: '→ Powered by live AI · ' + (remaining > 0 ? remaining + ' free estimate' + (remaining !== 1 ? 's' : '') + ' remaining' : 'Subscribe for unlimited estimates') });
 
+          hideLoadingBar();
           animateLines(lines, output, btn);
         } else {
           throw new Error(data.error || 'Unexpected response');
         }
       } catch (err) {
+        hideLoadingBar();
         // Fallback to generic on error
         const errEl = document.createElement('div');
         errEl.classList.add('line', 'visible');
@@ -1038,6 +1124,12 @@
         output.insertBefore(errEl, output.querySelector('.demo-cursor'));
         setTimeout(() => animateLines(genericLines, output, btn), 500);
       }
+    }
+    // ── Service Worker registration ──────────────────────────
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+      });
     }
   </script>
 
