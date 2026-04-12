@@ -81,6 +81,40 @@
     .nav-logo { font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 700; color: var(--cyan); text-decoration: none; }
     .nav-cta { background: var(--cyan); color: var(--blue-dark); padding: 0.5rem 1.25rem; border-radius: 6px; font-weight: 600; font-size: 0.875rem; text-decoration: none; transition: opacity 0.2s; }
     .nav-cta:hover { opacity: 0.85; }
+    .nav-try-demo {
+      background: linear-gradient(135deg, var(--orange), #e04a10);
+      color: #fff;
+      padding: 0.45rem 1.1rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.875rem;
+      font-family: 'JetBrains Mono', monospace;
+      text-decoration: none;
+      box-shadow: 0 0 14px rgba(255,107,53,0.55);
+      transition: box-shadow 0.2s, transform 0.2s;
+      white-space: nowrap;
+    }
+    .nav-try-demo:hover { box-shadow: 0 0 24px rgba(255,107,53,0.8); transform: translateY(-1px); }
+
+    /* Floating mobile demo CTA */
+    .mobile-demo-fab {
+      display: none;
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      background: linear-gradient(135deg, var(--orange), #e04a10);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.85rem 2rem;
+      border-radius: 999px;
+      text-decoration: none;
+      box-shadow: 0 4px 24px rgba(255,107,53,0.6);
+      white-space: nowrap;
+    }
 
     /* Hero */
     .hero {
@@ -483,6 +517,8 @@
     }
     @media (max-width: 640px) {
       nav { padding: 0 1rem; }
+      .nav-try-demo { display: none; }
+      .mobile-demo-fab { display: block; }
       .pipeline { gap: 0; }
       .pipeline-step::after { display: none; }
       .demo-input-row { flex-direction: column; }
@@ -518,12 +554,16 @@
   <nav aria-label="Main navigation">
     <a class="nav-logo" href="/">TD_TOOLS</a>
     <div style="display:flex;align-items:center;gap:1.5rem;">
+      <a class="nav-try-demo" href="http://100.78.12.125:8000/demo" target="_blank" rel="noopener">⚡ Try Demo</a>
       <a href="#demo" style="color:var(--muted);font-size:0.85rem;text-decoration:none;display:none;" class="nav-link-demo">Demo</a>
       <a href="#pricing" style="color:var(--muted);font-size:0.85rem;text-decoration:none;display:none;" class="nav-link-pricing">Pricing</a>
       <a href="#faq" style="color:var(--muted);font-size:0.85rem;text-decoration:none;display:none;" class="nav-link-faq">FAQ</a>
       <a class="nav-cta mono" href="#pricing">Get Started →</a>
     </div>
   </nav>
+
+  <!-- Floating mobile CTA -->
+  <a class="mobile-demo-fab" href="http://100.78.12.125:8000/demo" target="_blank" rel="noopener">⚡ Try Demo</a>
 
   <!-- Hero -->
   <div class="hero" id="main-content">
